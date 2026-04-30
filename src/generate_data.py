@@ -20,6 +20,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from .lab_schema import LAB_FEATURES, LAB_TARGET
+
 RNG = np.random.default_rng(42)
 
 NOTE_TEMPLATES_LOW = [
@@ -80,11 +82,11 @@ def make_labs(n: int, patient_ids: list[str]) -> pd.DataFrame:
     df = pd.DataFrame(
         {
             "patient_id": patient_ids[:n],
-            "a1c": a1c,
-            "ldl": ldl,
-            "egfr": egfr,
-            "troponin": troponin,
-            "at_risk": at_risk,
+            LAB_FEATURES[0]: a1c,
+            LAB_FEATURES[1]: ldl,
+            LAB_FEATURES[2]: egfr,
+            LAB_FEATURES[3]: troponin,
+            LAB_TARGET: at_risk,
         }
     )
     drop_idx = RNG.choice(df.index, size=int(0.1 * len(df)), replace=False)

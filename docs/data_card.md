@@ -61,11 +61,15 @@ patients with no submitted lab panel)
 | Column | Type | Description |
 |--------|------|-------------|
 | `patient_id` | str | Joins to `claims.csv` |
-| `a1c` | float | Hemoglobin A1C %, Normal(6.5, 1.5) |
-| `ldl` | float | LDL cholesterol mg/dL, Normal(130, 35) |
-| `egfr` | float | Estimated GFR, Normal(70, 20) |
-| `troponin` | float | Cardiac troponin ng/mL, Exponential(scale=0.05) |
-| `at_risk` | int | Target. 1 if any panel breaches its clinical threshold |
+| `hemoglobin_a1c_percent` | float | Hemoglobin A1C %, Normal(6.5, 1.5). Legacy alias: `a1c` |
+| `ldl_cholesterol_mg_dl` | float | LDL cholesterol mg/dL, Normal(130, 35). Legacy alias: `ldl` |
+| `estimated_gfr_ml_min_1_73m2` | float | Estimated GFR, Normal(70, 20). Legacy alias: `egfr` |
+| `troponin_ng_ml` | float | Cardiac troponin ng/mL, Exponential(scale=0.05). Legacy alias: `troponin` |
+| `lab_risk_flag` | int | Target. 1 if any panel breaches its clinical threshold. Legacy alias: `at_risk` |
+
+The lab training loader accepts both the readable names above and the older
+short names, so existing local files do not break. New generated and public
+mapped lab CSVs use the readable names.
 
 ### Clinical thresholds used for the `at_risk` label
 - A1C > 8.5 (uncontrolled diabetes)

@@ -1,11 +1,11 @@
 {
-  "auc": 0.9403,
-  "accuracy": 0.8972,
-  "brier_score": 0.0734,
-  "log_loss": 0.2512,
+  "auc": 0.9514,
+  "accuracy": 0.9194,
+  "brier_score": 0.0681,
+  "log_loss": 0.2344,
   "epochs": 20,
   "n_train": 1440,
   "n_test": 360,
-  "final_train_auc": 0.9356,
-  "final_val_auc": 0.9526
+  "final_train_auc": 0.9331,
+  "final_val_auc": 0.9565
 }

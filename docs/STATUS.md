@@ -31,7 +31,7 @@ python -m eval.run_eval --runs 3
 | Model | AUC | Brier | Other |
 |-------|-----|-------|-------|
 | Claims RF holdout | 0.9613 | 0.0095 | 5-fold CV AUC 0.9564 +/- 0.0208; log loss 0.0671 |
-| Labs NN holdout | 0.9403 | 0.0734 | accuracy 0.8972; log loss 0.2512 |
+| Labs NN holdout | 0.9514 | 0.0681 | accuracy 0.9194; log loss 0.2344 |
 | RF Optuna sweep | best CV AUC 0.9612 | n/a | 30 trials; best params in `models/claims_rf_best_params.json` |
 
 RF best params:
@@ -102,7 +102,7 @@ Latest offline verification:
 python -m pytest tests/ -v
 ```
 
-Result: **42 passed, 2 warnings**.
+Result: **44 passed, 2 warnings**.
 
 | File | Count | Coverage |
 |------|-------|----------|
@@ -111,10 +111,10 @@ Result: **42 passed, 2 warnings**.
 | `tests/test_agents.py` | 5 | model selection, routing, Case A/B/C prompt contracts |
 | `tests/test_main.py` | 5 | CLI error rendering plus custom input/output helpers |
 | `tests/test_orchestrator.py` | 12 | fence stripping, decision parsing, fallback recovery |
-| `tests/test_training_data.py` | 1 | generated claims label separability |
+| `tests/test_training_data.py` | 3 | generated claims label separability and readable lab schema |
 | `tests/test_secrets.py` | 1 | guards against committing Gemini-shaped API keys |
 | `tests/test_loop_exit.py` | 8 | LoopExitChecker decision logic + loop wiring |
-| **Total** | **42** | offline-only - none consume Gemini quota |
+| **Total** | **44** | offline-only - none consume Gemini quota |
 
 ## Remaining Future Work
 

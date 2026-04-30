@@ -12,9 +12,9 @@ Fresh baseline from 2026-04-30:
 
 | Area | Result |
 |------|--------|
-| Offline tests | 42 passed |
+| Offline tests | 44 passed |
 | Claims RF | AUC 0.9613, Brier 0.0095 |
-| Labs NN | AUC 0.9403, Brier 0.0734 |
+| Labs NN | AUC 0.9514, Brier 0.0681 |
 | Live eval | A/B/C all 100% decision agreement across 3 runs |
 | Expected actions | A `AUTO_APPROVE`, B `FLAG_FOR_AUDIT`, C `ESCALATE_TO_HUMAN` |
 
@@ -113,6 +113,14 @@ Custom patient-case JSON shape:
 ```
 
 Set `"labs": null` when labs are missing. The router will skip the labs specialist for that case.
+
+For training CSVs, lab columns use readable headers:
+
+```text
+patient_id,hemoglobin_a1c_percent,ldl_cholesterol_mg_dl,estimated_gfr_ml_min_1_73m2,troponin_ng_ml,lab_risk_flag
+```
+
+The trainer still accepts legacy short headers (`a1c`, `ldl`, `egfr`, `troponin`, `at_risk`) for backward compatibility.
 
 Outputs are written here:
 
@@ -220,7 +228,7 @@ claims-risk-orchestrator/
 │   ├── sample_cases.py      three canonical test cases
 │   └── main.py              CLI entry point
 ├── eval/run_eval.py         multi-run evaluation harness (agreement + p50/p95)
-├── tests/                   42 offline pytests; conftest skips on missing API key
+├── tests/                   44 offline pytests; conftest skips on missing API key
 ├── streamlit_app.py         interactive demo dashboard
 ├── .github/workflows/ci.yml offline CI: install + data + train + tests
 ├── requirements.txt

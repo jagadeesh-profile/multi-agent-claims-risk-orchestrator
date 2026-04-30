@@ -17,6 +17,8 @@ from zipfile import ZipFile
 
 import pandas as pd
 
+from .lab_schema import LAB_FEATURES, LAB_TARGET
+
 
 CLAIMS_COLUMNS = [
     "patient_id",
@@ -27,7 +29,7 @@ CLAIMS_COLUMNS = [
     "age",
     "is_anomaly",
 ]
-LAB_COLUMNS = ["patient_id", "a1c", "ldl", "egfr", "troponin", "at_risk"]
+LAB_COLUMNS = ["patient_id", *LAB_FEATURES, LAB_TARGET]
 NOTE_COLUMNS = ["patient_id", "discharge_note", "true_severity"]
 
 
@@ -76,19 +78,19 @@ def map_nhanes_labs(ghb: pd.DataFrame, hdl: pd.DataFrame) -> pd.DataFrame:
     mapped = pd.DataFrame(
         {
             "patient_id": "NHANES_" + joined["SEQN"].astype(int).astype(str),
-            "a1c": a1c,
-            "ldl": estimated_ldl,
-            "egfr": 70.0,
-            "troponin": 0.02,
+            LAB_FEATURES[0]: a1c,
+            LAB_FEATURES[1]: estimated_ldl,
+            LAB_FEATURES[2]: 70.0,
+            LAB_FEATURES[3]: 0.02,
         }
     )
-    mapped["at_risk"] = (
-        (mapped["a1c"] >= 8.5)
-        | (mapped["ldl"] >= 160)
-        | (mapped["egfr"] < 45)
-        | (mapped["troponin"] > 0.4)
+    mapped[LAB_TARGET] = (
+        (mapped[LAB_FEATURES[0]] >= 8.5)
+        | (mapped[LAB_FEATURES[1]] >= 160)
+        | (mapped[LAB_FEATURES[2]] < 45)
+        | (mapped[LAB_FEATURES[3]] > 0.4)
     ).astype(int)
-    return mapped.dropna(subset=["a1c", "ldl"])[LAB_COLUMNS].reset_index(drop=True)
+    return mapped.dropna(subset=[LAB_FEATURES[0], LAB_FEATURES[1]])[LAB_COLUMNS].reset_index(drop=True)
 
 
 def map_mimic_ed_notes(diagnosis: pd.DataFrame, triage: pd.DataFrame) -> pd.DataFrame:

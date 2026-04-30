@@ -47,15 +47,15 @@ def test_map_nhanes_labs_outputs_lab_training_schema() -> None:
 
     assert mapped.columns.tolist() == [
         "patient_id",
-        "a1c",
-        "ldl",
-        "egfr",
-        "troponin",
-        "at_risk",
+        "hemoglobin_a1c_percent",
+        "ldl_cholesterol_mg_dl",
+        "estimated_gfr_ml_min_1_73m2",
+        "troponin_ng_ml",
+        "lab_risk_flag",
     ]
     assert mapped.loc[0, "patient_id"] == "NHANES_1"
-    assert mapped.loc[0, "at_risk"] == 1
-    assert mapped.loc[1, "at_risk"] == 0
+    assert mapped.loc[0, "lab_risk_flag"] == 1
+    assert mapped.loc[1, "lab_risk_flag"] == 0
 
 
 def test_map_mimic_ed_notes_outputs_notes_schema() -> None:

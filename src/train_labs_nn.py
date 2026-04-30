@@ -26,8 +26,10 @@ from sklearn.metrics import brier_score_loss, log_loss, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-FEATURES = ["a1c", "ldl", "egfr", "troponin"]
-TARGET = "at_risk"
+from .lab_schema import LAB_FEATURES as FEATURES
+from .lab_schema import LAB_TARGET as TARGET
+from .lab_schema import normalize_labs_dataframe
+
 EXPERIMENT_NAME = "claims-risk-labs-nn"
 
 
@@ -66,7 +68,7 @@ def main() -> None:
     if not data_path.exists():
         raise FileNotFoundError("Run `python -m src.generate_data` first")
 
-    df = pd.read_csv(data_path)
+    df = normalize_labs_dataframe(pd.read_csv(data_path))
     X = df[FEATURES].to_numpy(dtype=np.float32)
     y = df[TARGET].to_numpy(dtype=np.float32)
 
