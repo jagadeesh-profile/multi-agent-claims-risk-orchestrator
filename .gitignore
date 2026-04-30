@@ -11,6 +11,7 @@ models/*.pkl
 models/*.keras
 models/*.joblib
 data/*.csv
+data_public/
 .venv/
 venv/
 .DS_Store

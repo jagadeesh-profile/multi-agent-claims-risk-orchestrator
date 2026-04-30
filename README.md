@@ -12,7 +12,7 @@ Fresh baseline from 2026-04-30:
 
 | Area | Result |
 |------|--------|
-| Offline tests | 39 passed |
+| Offline tests | 42 passed |
 | Claims RF | AUC 0.9613, Brier 0.0095 |
 | Labs NN | AUC 0.9403, Brier 0.0734 |
 | Live eval | A/B/C all 100% decision agreement across 3 runs |
@@ -87,6 +87,7 @@ There are three ways to feed input into the project:
 | Run built-in demos | `src/sample_cases.py` | `python -m src.main --case A` |
 | Run a new patient case | Any JSON file you create, for example `inputs/case_robert.json` | `python -m src.main --input inputs/case_robert.json` |
 | Retrain models on generated data | `data/claims.csv`, `data/labs.csv`, `data/notes.csv` | `python -m src.generate_data --n 2000 --out data` |
+| Map verified public samples | `tmp/raw_public/` -> `data_public/*.csv` | `python -m src.prepare_public_data --raw-dir tmp/raw_public --out data_public` |
 | Use the dashboard | Paste custom JSON into Streamlit | `streamlit run streamlit_app.py` |
 
 Custom patient-case JSON shape:
@@ -125,6 +126,39 @@ Outputs are written here:
 | MLflow runs | `mlruns/` | training and tuning scripts |
 
 The raw generated CSVs, trained model binaries, local audit logs, `.env`, `.venv`, `mlruns/`, and CLI decision outputs are gitignored by default.
+
+## Public raw data bridge
+
+The project can also map small, verified public raw-data samples into the same
+CSV schemas used by the training scripts.
+
+Verified source categories:
+
+| Source | Local raw file | Mapped output |
+|--------|----------------|---------------|
+| CMS DE-SynPUF inpatient claims sample | `tmp/raw_public/cms_de_synpuf_inpatient_sample2.zip` | `data_public/claims.csv` |
+| CDC NHANES glycohemoglobin + HDL lab files | `tmp/raw_public/nhanes_ghb_j.xpt`, `tmp/raw_public/nhanes_hdl_j.xpt` | `data_public/labs.csv` |
+| PhysioNet MIMIC-IV-ED Demo | `tmp/raw_public/mimic_iv_ed_demo_2_2.zip` | `data_public/notes.csv` |
+
+Run the mapper:
+
+```bash
+python -m src.prepare_public_data --raw-dir tmp/raw_public --out data_public
+```
+
+On the verified sample download, this produced:
+
+```text
+data_public/claims.csv  # 66,494 rows
+data_public/labs.csv    # 5,928 rows
+data_public/notes.csv   # 222 rows
+```
+
+These mapped files are useful for schema validation and demo ETL. They are
+not yet a production benchmark: CMS DE-SynPUF is synthetic, NHANES labs are
+cross-sectional and not linked to CMS claims, and MIMIC-IV-ED Demo is a small
+open subset. Full MIMIC-IV still requires PhysioNet credentialing and a data
+use agreement.
 
 ## Quick start
 
@@ -186,7 +220,7 @@ claims-risk-orchestrator/
 │   ├── sample_cases.py      three canonical test cases
 │   └── main.py              CLI entry point
 ├── eval/run_eval.py         multi-run evaluation harness (agreement + p50/p95)
-├── tests/                   39 offline pytests; conftest skips on missing API key
+├── tests/                   42 offline pytests; conftest skips on missing API key
 ├── streamlit_app.py         interactive demo dashboard
 ├── .github/workflows/ci.yml offline CI: install + data + train + tests
 ├── requirements.txt
