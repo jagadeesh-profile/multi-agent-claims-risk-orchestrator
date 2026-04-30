@@ -2,35 +2,35 @@
   "top_features": [
     {
       "feature": "num__cost_usd",
-      "importance": 0.4302
-    },
-    {
-      "feature": "num__age",
-      "importance": 0.2047
-    },
-    {
-      "feature": "num__los_days",
-      "importance": 0.1545
+      "importance": 0.6086
     },
     {
       "feature": "num__procedure_count",
-      "importance": 0.1514
+      "importance": 0.2339
     },
     {
-      "feature": "cat__drg_code_292",
-      "importance": 0.0158
+      "feature": "num__age",
+      "importance": 0.0695
     },
     {
-      "feature": "cat__drg_code_871",
-      "importance": 0.0151
+      "feature": "num__los_days",
+      "importance": 0.0599
     },
     {
       "feature": "cat__drg_code_291",
-      "importance": 0.0144
+      "importance": 0.0076
+    },
+    {
+      "feature": "cat__drg_code_292",
+      "importance": 0.0074
     },
     {
       "feature": "cat__drg_code_470",
-      "importance": 0.0138
+      "importance": 0.0069
+    },
+    {
+      "feature": "cat__drg_code_871",
+      "importance": 0.0063
     }
   ]
 }

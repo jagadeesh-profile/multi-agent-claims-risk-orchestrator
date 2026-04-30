@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from src.agents import (
     CASE_A_MILD_SIGNAL_GUIDANCE,
+    CASE_B_CONFLICT_GUIDANCE,
+    CASE_C_MISSING_LABS_GUIDANCE,
     FINAL_RISK_THRESHOLDS,
     MODEL_FAST,
     MODEL_SMART,
@@ -63,3 +65,23 @@ def test_case_a_mild_signals_are_pinned_to_low_risk_contract() -> None:
     assert fusion_agent.generate_content_config.temperature == 0.0
     assert reviewer_agent.generate_content_config.temperature == 0.0
     assert action_agent.generate_content_config.temperature == 0.0
+
+
+def test_case_b_and_c_contracts_are_explicit_and_json_only() -> None:
+    assert (
+        CASE_B_CONFLICT_GUIDANCE["target_fused_anomaly_score_min"]
+        >= FINAL_RISK_THRESHOLDS["high"]
+    )
+    assert (
+        CASE_B_CONFLICT_GUIDANCE["target_fused_confidence_min"]
+        >= FINAL_RISK_THRESHOLDS["escalate"]
+    )
+    assert (
+        CASE_C_MISSING_LABS_GUIDANCE["target_fused_confidence_max"]
+        < FINAL_RISK_THRESHOLDS["escalate"]
+    )
+    assert "conflicted Case B" in fusion_agent.instruction
+    assert "missing-labs Case C" in fusion_agent.instruction
+    assert "Output ONLY valid JSON" in action_agent.instruction
+    assert "no markdown" in action_agent.instruction
+    assert "no prose" in action_agent.instruction

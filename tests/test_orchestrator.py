@@ -6,7 +6,12 @@ import asyncio
 import pytest
 
 from src import orchestrator
-from src.orchestrator import _parse_decision, _strip_markdown_fence, run_case
+from src.orchestrator import (
+    _decision_from_fusion,
+    _parse_decision,
+    _strip_markdown_fence,
+    run_case,
+)
 
 
 def test_strip_markdown_fence_removes_json_fence() -> None:
@@ -45,6 +50,34 @@ def test_parse_decision_returns_error_envelope_for_invalid_json() -> None:
     decision = _parse_decision("not json at all")
     assert decision["error"] == "ActionAgent did not produce valid JSON"
     assert decision["raw"] == "not json at all"
+
+
+def test_decision_from_fusion_maps_high_confidence_high_risk_to_audit() -> None:
+    decision = _decision_from_fusion(
+        patient_id="P_ROBERT",
+        fusion_result={
+            "fused_anomaly_score": 0.74,
+            "fused_confidence": 0.88,
+            "reasoning": "claims and notes conflict",
+            "signals_used": ["claims", "labs", "notes"],
+            "conflict_detected": True,
+        },
+    )
+
+    assert decision["risk_level"] == "HIGH"
+    assert decision["recommended_action"] == "FLAG_FOR_AUDIT"
+
+
+def test_decision_from_fusion_maps_missing_labs_confidence_to_escalation() -> None:
+    decision = _decision_from_fusion(
+        patient_id="P_LINDA",
+        fusion_result='{"fused_anomaly_score": 0.5, "fused_confidence": 0.66, '
+        '"reasoning": "labs missing", "signals_used": ["claims", "notes"], '
+        '"conflict_detected": false}',
+    )
+
+    assert decision["risk_level"] == "MEDIUM"
+    assert decision["recommended_action"] == "ESCALATE_TO_HUMAN"
 
 
 class _FakeSession:
@@ -98,6 +131,35 @@ def _patch_runner(monkeypatch, *, raise_after: bool) -> dict:
 def test_run_case_recovers_decision_when_runner_raises_after_action(monkeypatch) -> None:
     _patch_runner(monkeypatch, raise_after=True)
     result = asyncio.run(run_case({"patient_id": "P_TEST"}))
+    assert result["decision"]["risk_level"] == "LOW"
+    assert result["decision"]["recommended_action"] == "AUTO_APPROVE"
+
+
+def test_run_case_falls_back_to_fusion_when_action_output_missing(monkeypatch) -> None:
+    state: dict = {
+        "fusion_result": {
+            "fused_anomaly_score": 0.11,
+            "fused_confidence": 0.9,
+            "reasoning": "low signals agree",
+            "signals_used": ["claims", "labs", "notes"],
+            "conflict_detected": False,
+        }
+    }
+    monkeypatch.setattr(orchestrator, "InMemorySessionService", lambda: _FakeSessionService(state))
+
+    class _NoActionRunner:
+        def run_async(self, **_kwargs):
+            async def gen():
+                if False:
+                    yield None
+            return gen()
+
+    monkeypatch.setattr(orchestrator, "Runner", lambda **_kw: _NoActionRunner())
+    monkeypatch.setattr(orchestrator.genai_types, "Content", lambda **_kw: object())
+    monkeypatch.setattr(orchestrator.genai_types, "Part", lambda **_kw: object())
+
+    result = asyncio.run(run_case({"patient_id": "P_MARY"}))
+
     assert result["decision"]["risk_level"] == "LOW"
     assert result["decision"]["recommended_action"] == "AUTO_APPROVE"
 

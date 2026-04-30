@@ -31,6 +31,55 @@ def _parse_decision(raw: Any) -> dict[str, Any]:
     except json.JSONDecodeError:
         return {"error": "ActionAgent did not produce valid JSON", "raw": raw}
 
+
+def _parse_state_dict(raw: Any) -> dict[str, Any]:
+    if isinstance(raw, dict):
+        return raw
+    if isinstance(raw, str):
+        try:
+            parsed = json.loads(_strip_markdown_fence(raw))
+        except json.JSONDecodeError:
+            return {}
+        return parsed if isinstance(parsed, dict) else {}
+    return {}
+
+
+def _decision_from_fusion(patient_id: str, fusion_result: Any) -> dict[str, Any]:
+    """Deterministic fallback for when ActionAgent spends its turn on a tool call."""
+    fusion = _parse_state_dict(fusion_result)
+    score = float(fusion.get("fused_anomaly_score", 0.5))
+    confidence = float(fusion.get("fused_confidence", 0.0))
+
+    if score >= 0.7:
+        risk_level = "HIGH"
+    elif score >= 0.4:
+        risk_level = "MEDIUM"
+    else:
+        risk_level = "LOW"
+
+    if confidence < 0.7:
+        action = "ESCALATE_TO_HUMAN"
+    elif risk_level == "HIGH":
+        action = "FLAG_FOR_AUDIT"
+    elif risk_level == "MEDIUM":
+        action = "ROUTINE_FOLLOWUP"
+    else:
+        action = "AUTO_APPROVE"
+
+    return {
+        "patient_id": patient_id,
+        "risk_level": risk_level,
+        "anomaly_score": round(score, 4),
+        "confidence": round(confidence, 4),
+        "recommended_action": action,
+        "reasoning": fusion.get("reasoning", "Deterministic fallback from fusion_result."),
+        "audit_trail": {
+            "signals_used": fusion.get("signals_used", []),
+            "conflict_detected": bool(fusion.get("conflict_detected", False)),
+            "fallback": "fusion_result",
+        },
+    }
+
 try:
     from google.adk.runners import Runner
     from google.adk.sessions import InMemorySessionService
@@ -136,11 +185,22 @@ async def run_case(case: dict[str, Any], verbose: bool = False) -> dict[str, Any
     final_decision_raw = state.get("final_decision")
 
     if final_decision_raw is None:
-        if runner_error is not None:
+        if state.get("fusion_result") is not None:
+            decision = _decision_from_fusion(
+                patient_id=str(case.get("patient_id", "UNKNOWN")),
+                fusion_result=state.get("fusion_result"),
+            )
+        elif runner_error is not None:
             raise runner_error
-        decision = _parse_decision("{}")
+        else:
+            decision = _parse_decision("{}")
     else:
         decision = _parse_decision(final_decision_raw)
+        if "recommended_action" not in decision and state.get("fusion_result") is not None:
+            decision = _decision_from_fusion(
+                patient_id=str(case.get("patient_id", "UNKNOWN")),
+                fusion_result=state.get("fusion_result"),
+            )
 
     per_agent_ms: dict[str, float] = {}
     for step in trace:

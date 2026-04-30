@@ -57,6 +57,14 @@ CASE_A_MILD_SIGNAL_GUIDANCE = {
     "target_fused_anomaly_score_max": 0.39,
     "target_fused_confidence_min": 0.72,
 }
+CASE_B_CONFLICT_GUIDANCE = {
+    "target_fused_anomaly_score_min": 0.72,
+    "target_fused_confidence_min": 0.78,
+}
+CASE_C_MISSING_LABS_GUIDANCE = {
+    "target_fused_anomaly_score": 0.5,
+    "target_fused_confidence_max": 0.69,
+}
 
 
 class RoutedParallelAgent(ParallelAgent):
@@ -218,10 +226,22 @@ fusion_agent = LlmAgent(
         f"(target >= {CASE_A_MILD_SIGNAL_GUIDANCE['target_fused_confidence_min']}). "
         "Do not convert small numeric disagreement among mild signals into "
         "low confidence.\n"
+        f"  - For conflicted Case B-style evidence, where claims are high and "
+        "notes billing_consistency is 'inconsistent', preserve the audit path: "
+        f"set fused_anomaly_score >= {CASE_B_CONFLICT_GUIDANCE['target_fused_anomaly_score_min']} "
+        f"and fused_confidence >= {CASE_B_CONFLICT_GUIDANCE['target_fused_confidence_min']}. "
+        "The reasoning must explicitly mention the conflict or inconsistency.\n"
+        f"  - For missing-labs Case C-style evidence, use the available claims "
+        "and notes but preserve human review: labs must be omitted from "
+        "signals_used, set fused_anomaly_score around "
+        f"{CASE_C_MISSING_LABS_GUIDANCE['target_fused_anomaly_score']}, "
+        f"and set fused_confidence <= {CASE_C_MISSING_LABS_GUIDANCE['target_fused_confidence_max']} "
+        "so ActionAgent escalates instead of routine-following the case.\n"
         "  - If claims score is high but labs and notes are LOW and consistent "
         "    with each other, weight the disagreement: the claim is the anomaly.\n"
         "  - If labs is missing, drop its weight to zero and increase reliance "
-        "    on the other two — but cap final confidence at 0.7.\n"
+        "    on the other two — but keep final confidence below 0.7 unless "
+        "    another available source provides strong, consistent evidence.\n"
         "  - If notes flag billing_consistency='inconsistent', boost the "
         "    anomaly signal by 0.15.\n"
         "  - If all three agree (all low or all high), confidence is high.\n\n"
@@ -313,6 +333,7 @@ refiner_agent = LlmAgent(
         "Write the refined dict back to session.state under key "
         "'fusion_result'. Output the same JSON shape as fusion_result."
     ),
+    generate_content_config=DETERMINISTIC_GENERATION,
     output_key="fusion_result",
 )
 
@@ -335,6 +356,9 @@ action_agent = LlmAgent(
     description="Emits the final structured decision and writes the audit log.",
     instruction=(
         "Read fusion_result and review_result from session.state.\n\n"
+        "Output ONLY valid JSON: no markdown, no prose, no headings, and no "
+        "text before or after the JSON object. The JSON must use double-quoted "
+        "keys and values where strings are required.\n\n"
         "Map fused_anomaly_score to risk_level:\n"
         "  >= 0.7 -> HIGH\n"
         "  >= 0.4 -> MEDIUM\n"
@@ -344,10 +368,10 @@ action_agent = LlmAgent(
         "  MEDIUM  + conf >= 0.7  -> ROUTINE_FOLLOWUP\n"
         "  LOW     + conf >= 0.7  -> AUTO_APPROVE\n"
         "  any risk + conf <  0.7 -> ESCALATE_TO_HUMAN\n\n"
-        "Output the final JSON with keys: patient_id, risk_level, "
+        "Call write_audit_log with patient_id and the full decision dict, then "
+        "return the final JSON with keys: patient_id, risk_level, "
         "anomaly_score, confidence, recommended_action, reasoning, "
-        "audit_trail. Then call write_audit_log with patient_id and the "
-        "full decision dict."
+        "audit_trail."
     ),
     tools=[FunctionTool(write_audit_log)],
     generate_content_config=DETERMINISTIC_GENERATION,

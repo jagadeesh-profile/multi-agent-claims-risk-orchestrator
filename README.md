@@ -1,8 +1,24 @@
-# Claims-Risk Orchestrator
+# Multi-Agent Claims Risk Orchestrator
 
-A learning-oriented multi-agent system on Google Vertex AI ADK that ingests heterogeneous claims data — structured insurance claims, semi-structured lab panels, and unstructured discharge notes — and produces a routed, explainable decision in under 30 seconds.
+[![CI](https://github.com/jagadeesh-profile/multi-agent-claims-risk-orchestrator/actions/workflows/ci.yml/badge.svg)](https://github.com/jagadeesh-profile/multi-agent-claims-risk-orchestrator/actions/workflows/ci.yml)
+
+A learning-oriented multi-agent system on Google Vertex AI ADK that ingests heterogeneous claims data — structured insurance claims, semi-structured lab panels, and unstructured discharge notes — and produces a routed, explainable decision with measured latency.
 
 > **Quick links:** [Architecture diagram](docs/architecture.svg) · [Model card](docs/model_card.md) · [Data card](docs/data_card.md) · [Status / what's verified](docs/STATUS.md) · [LinkedIn launch kit](docs/LAUNCH_KIT.md)
+
+## Current baseline
+
+Fresh baseline from 2026-04-30:
+
+| Area | Result |
+|------|--------|
+| Offline tests | 37 passed |
+| Claims RF | AUC 0.9613, Brier 0.0095 |
+| Labs NN | AUC 0.9403, Brier 0.0734 |
+| Live eval | A/B/C all 100% decision agreement across 3 runs |
+| Expected actions | A `AUTO_APPROVE`, B `FLAG_FOR_AUDIT`, C `ESCALATE_TO_HUMAN` |
+
+![MLflow UI baseline](docs/mlflow_ui.png)
 
 This is a proof of concept built to explore the four ADK agent primitives (`LlmAgent`, `SequentialAgent`, `ParallelAgent`, `LoopAgent`) on a domain that justifies using all of them. The data is synthetic-but-shape-realistic so the project can run end-to-end on a laptop without HIPAA-protected inputs. **Treat the architecture as the artifact, not the numbers.**
 
@@ -119,7 +135,7 @@ claims-risk-orchestrator/
 │   ├── sample_cases.py      three canonical test cases
 │   └── main.py              CLI entry point
 ├── eval/run_eval.py         multi-run evaluation harness (agreement + p50/p95)
-├── tests/                   22+ offline pytests; conftest skips on missing API key
+├── tests/                   37 offline pytests; conftest skips on missing API key
 ├── streamlit_app.py         interactive demo dashboard
 ├── .github/workflows/ci.yml offline CI: install + data + train + tests
 ├── requirements.txt

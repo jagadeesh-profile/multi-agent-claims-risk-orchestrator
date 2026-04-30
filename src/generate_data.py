@@ -48,11 +48,9 @@ def make_claims(n: int) -> pd.DataFrame:
     drg = RNG.choice(["470", "291", "292", "871", "292"], size=n)
     age = RNG.integers(45, 90, size=n)
 
-    anomaly = (
-        (cost > cost.mean() + cost.std()).astype(int)
-        & (procedure_count >= 5).astype(int)
-    )
-    noise = RNG.binomial(1, 0.05, size=n)
+    high_cost_threshold = np.quantile(cost, 0.85)
+    anomaly = ((cost > high_cost_threshold) & (procedure_count >= 5)).astype(int)
+    noise = RNG.binomial(1, 0.01, size=n)
     is_anomaly = ((anomaly + noise) > 0).astype(int)
 
     return pd.DataFrame(

@@ -1,11 +1,11 @@
 {
-  "best_cv_auc": 0.717,
+  "best_cv_auc": 0.9612,
   "best_params": {
-    "n_estimators": 600,
+    "n_estimators": 500,
     "max_depth": 16,
-    "min_samples_leaf": 8,
+    "min_samples_leaf": 10,
     "min_samples_split": 20,
-    "max_features": "sqrt"
+    "max_features": "log2"
   },
   "n_trials": 30
 }
