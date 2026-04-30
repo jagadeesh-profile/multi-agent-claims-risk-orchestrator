@@ -5,6 +5,8 @@ __pycache__/
 tmp/
 pytest-cache-files-*/
 logs/*.jsonl
+inputs/
+outputs/
 models/*.pkl
 models/*.keras
 models/*.joblib

@@ -102,18 +102,18 @@ Latest offline verification:
 python -m pytest tests/ -v
 ```
 
-Result: **37 passed, 2 warnings**.
+Result: **39 passed, 2 warnings**.
 
 | File | Count | Coverage |
 |------|-------|----------|
 | `tests/test_pipeline.py` | 7 | tool layer (RF, NN, audit log, error envelopes) |
 | `tests/test_agents.py` | 5 | model selection, routing, Case A/B/C prompt contracts |
-| `tests/test_main.py` | 3 | CLI error message rendering |
+| `tests/test_main.py` | 5 | CLI error rendering plus custom input/output helpers |
 | `tests/test_orchestrator.py` | 12 | fence stripping, decision parsing, fallback recovery |
 | `tests/test_training_data.py` | 1 | generated claims label separability |
 | `tests/test_secrets.py` | 1 | guards against committing Gemini-shaped API keys |
 | `tests/test_loop_exit.py` | 8 | LoopExitChecker decision logic + loop wiring |
-| **Total** | **37** | offline-only - none consume Gemini quota |
+| **Total** | **39** | offline-only - none consume Gemini quota |
 
 ## Remaining Future Work
 

@@ -12,7 +12,7 @@ Fresh baseline from 2026-04-30:
 
 | Area | Result |
 |------|--------|
-| Offline tests | 37 passed |
+| Offline tests | 39 passed |
 | Claims RF | AUC 0.9613, Brier 0.0095 |
 | Labs NN | AUC 0.9403, Brier 0.0734 |
 | Live eval | A/B/C all 100% decision agreement across 3 runs |
@@ -78,6 +78,54 @@ RootPipeline (SequentialAgent)
 
 `recommended_action` is one of `AUTO_APPROVE`, `ROUTINE_FOLLOWUP`, `FLAG_FOR_AUDIT`, `ESCALATE_TO_HUMAN` — each maps to a different downstream system (auto-payment, care manager queue, SIU audit ticket, human review).
 
+## Input and output paths
+
+There are three ways to feed input into the project:
+
+| Use case | Where input goes | Command / UI |
+|----------|------------------|--------------|
+| Run built-in demos | `src/sample_cases.py` | `python -m src.main --case A` |
+| Run a new patient case | Any JSON file you create, for example `inputs/case_robert.json` | `python -m src.main --input inputs/case_robert.json` |
+| Retrain models on generated data | `data/claims.csv`, `data/labs.csv`, `data/notes.csv` | `python -m src.generate_data --n 2000 --out data` |
+| Use the dashboard | Paste custom JSON into Streamlit | `streamlit run streamlit_app.py` |
+
+Custom patient-case JSON shape:
+
+```json
+{
+  "patient_id": "P_CUSTOM",
+  "claim": {
+    "cost_usd": 12000.0,
+    "procedure_count": 3,
+    "los_days": 2,
+    "age": 61,
+    "drg_code": "470"
+  },
+  "labs": {
+    "a1c": 7.2,
+    "ldl": 135,
+    "egfr": 68,
+    "troponin": 0.02
+  },
+  "notes": "Short discharge or claim-review note goes here."
+}
+```
+
+Set `"labs": null` when labs are missing. The router will skip the labs specialist for that case.
+
+Outputs are written here:
+
+| Output | Saved location | Created by |
+|--------|----------------|------------|
+| Final CLI decision JSON | `outputs/decisions/<patient_id>_<timestamp>.json` | `python -m src.main ...` |
+| Audit log JSONL | `logs/audit.jsonl` | ActionAgent audit tool |
+| Eval report | `eval/results.json`, `eval/results.md` | `python -m eval.run_eval --runs 3` |
+| Model metrics | `models/claims_rf_metrics.json`, `models/labs_nn_metrics.json` | training scripts |
+| RF tuning result | `models/claims_rf_best_params.json` | `python -m src.tune_claims_rf --trials 30` |
+| MLflow runs | `mlruns/` | training and tuning scripts |
+
+The raw generated CSVs, trained model binaries, local audit logs, `.env`, `.venv`, `mlruns/`, and CLI decision outputs are gitignored by default.
+
 ## Quick start
 
 ```bash
@@ -95,6 +143,9 @@ python -m src.train_labs_nn
 python -m src.main --case A   # routine
 python -m src.main --case B   # fraud audit path
 python -m src.main --case C   # missing labs -> escalate
+
+# 3b. run your own patient case and save the decision JSON
+python -m src.main --input inputs/my_case.json --out-dir outputs/decisions
 
 # 4. interactive dashboard
 streamlit run streamlit_app.py
@@ -135,7 +186,7 @@ claims-risk-orchestrator/
 │   ├── sample_cases.py      three canonical test cases
 │   └── main.py              CLI entry point
 ├── eval/run_eval.py         multi-run evaluation harness (agreement + p50/p95)
-├── tests/                   37 offline pytests; conftest skips on missing API key
+├── tests/                   39 offline pytests; conftest skips on missing API key
 ├── streamlit_app.py         interactive demo dashboard
 ├── .github/workflows/ci.yml offline CI: install + data + train + tests
 ├── requirements.txt

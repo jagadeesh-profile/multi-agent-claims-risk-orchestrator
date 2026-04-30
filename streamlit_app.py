@@ -37,20 +37,40 @@ if not Path("models/claims_rf.joblib").exists() or not Path("models/labs_nn.kera
 left, right = st.columns([1, 1])
 
 with left:
-    st.subheader("1. Pick a case")
-    case_choice = st.radio(
-        "Sample cases",
-        options=list(CASES.keys()),
-        format_func=lambda k: {
-            "A": "Case A — Mary, 67 (routine)",
-            "B": "Case B — Robert, 54 (possible fraud)",
-            "C": "Case C — Linda, 72 (missing labs)",
-        }[k],
-        horizontal=False,
+    st.subheader("1. Feed input")
+    input_mode = st.radio(
+        "Input source",
+        options=["Sample case", "Custom JSON"],
+        horizontal=True,
     )
 
-    case = CASES[case_choice]
-    st.json(case, expanded=False)
+    if input_mode == "Sample case":
+        case_choice = st.radio(
+            "Sample cases",
+            options=list(CASES.keys()),
+            format_func=lambda k: {
+                "A": "Case A — Mary, 67 (routine)",
+                "B": "Case B — Robert, 54 (possible fraud)",
+                "C": "Case C — Linda, 72 (missing labs)",
+            }[k],
+            horizontal=False,
+        )
+        case = CASES[case_choice]
+        st.json(case, expanded=False)
+    else:
+        raw_case = st.text_area(
+            "Patient case JSON",
+            value=json.dumps(CASES["A"], indent=2),
+            height=360,
+        )
+        try:
+            case = json.loads(raw_case)
+            if not isinstance(case, dict) or not case.get("patient_id"):
+                raise ValueError("Case JSON must be an object with patient_id.")
+            st.success(f"Ready to run patient `{case['patient_id']}`")
+        except (json.JSONDecodeError, ValueError) as exc:
+            st.error(f"Invalid input JSON: {exc}")
+            st.stop()
 
     run_clicked = st.button("Run pipeline", type="primary", use_container_width=True)
 
@@ -72,6 +92,7 @@ if run_clicked:
     with decision_slot.container():
         st.markdown(f"**Risk level:** :{risk_color}[**{risk_level}**]")
         st.markdown(f"**Action:** `{decision.get('recommended_action', '?')}`")
+        st.caption("Audit records are appended to `logs/audit.jsonl` when the live ActionAgent writes the audit log.")
         col1, col2 = st.columns(2)
         col1.metric("Anomaly score", f"{decision.get('anomaly_score', 0):.2f}")
         col2.metric("Confidence", f"{decision.get('confidence', 0):.2f}")
