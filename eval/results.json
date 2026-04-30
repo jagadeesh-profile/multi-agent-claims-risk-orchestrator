@@ -1,0 +1,108 @@
+{
+  "generated_at": "2026-04-30T17:30:29",
+  "runs_per_case": 3,
+  "total_invocations": 9,
+  "wall_clock_sec": 762.53,
+  "cases": [
+    {
+      "case_id": "A",
+      "patient_id": "P_MARY",
+      "runs": 3,
+      "successful_runs": 3,
+      "failure_rate": 0.0,
+      "decision_agreement_rate": 1.0,
+      "modal_action": "AUTO_APPROVE",
+      "action_distribution": {
+        "AUTO_APPROVE": 3
+      },
+      "risk_distribution": {
+        "LOW": 3
+      },
+      "latency": {
+        "p50_sec": 43.85,
+        "p95_sec": 51.63,
+        "mean_sec": 46.31
+      },
+      "per_agent_mean_ms": {
+        "RouterAgent": 2369.1,
+        "NotesAgent": 6113.7,
+        "LabsAgent": 1655.0,
+        "ClaimsAgent": 417.3,
+        "FusionAgent": 8020.7,
+        "ReviewerAgent": 11088.9,
+        "RefinerAgent": 8991.2,
+        "ActionAgent": 7651.0
+      },
+      "errors": []
+    },
+    {
+      "case_id": "B",
+      "patient_id": "P_ROBERT",
+      "runs": 3,
+      "successful_runs": 3,
+      "failure_rate": 0.0,
+      "decision_agreement_rate": 0.667,
+      "modal_action": "UNKNOWN",
+      "action_distribution": {
+        "UNKNOWN": 2,
+        "FLAG_FOR_AUDIT": 1
+      },
+      "risk_distribution": {
+        "UNKNOWN": 2,
+        "HIGH": 1
+      },
+      "latency": {
+        "p50_sec": 82.82,
+        "p95_sec": 263.73,
+        "mean_sec": 144.07
+      },
+      "per_agent_mean_ms": {
+        "RouterAgent": 2155.3,
+        "NotesAgent": 4243.2,
+        "LabsAgent": 1528.6,
+        "ClaimsAgent": 591.9,
+        "FusionAgent": 108815.3,
+        "ReviewerAgent": 11190.6,
+        "RefinerAgent": 8542.7,
+        "ActionAgent": 7714.4
+      },
+      "errors": []
+    },
+    {
+      "case_id": "C",
+      "patient_id": "P_LINDA",
+      "runs": 3,
+      "successful_runs": 3,
+      "failure_rate": 0.333,
+      "decision_agreement_rate": 0.333,
+      "modal_action": "PARSE_ERROR/UNKNOWN",
+      "action_distribution": {
+        "PARSE_ERROR/UNKNOWN": 1,
+        "ESCALATE_TO_HUMAN": 1,
+        "ROUTINE_FOLLOWUP": 1
+      },
+      "risk_distribution": {
+        "UNKNOWN": 1,
+        "MEDIUM": 2
+      },
+      "latency": {
+        "p50_sec": 63.24,
+        "p95_sec": 69.34,
+        "mean_sec": 63.79
+      },
+      "per_agent_mean_ms": {
+        "RouterAgent": 1696.2,
+        "LabsAgent": 3193.1,
+        "NotesAgent": 1564.0,
+        "ClaimsAgent": 1624.3,
+        "FusionAgent": 19753.3,
+        "ReviewerAgent": 11598.6,
+        "RefinerAgent": 15970.3,
+        "ActionAgent": 8390.5
+      },
+      "errors": [
+        "run 1: parse_error -> The claims-risk evaluation for patient P_LINDA has been finalized. The patient has a **MEDIUM** risk level with an anoma"
+      ]
+    }
+  ]
+}

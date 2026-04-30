@@ -1,0 +1,27 @@
+# Core agentic stack
+google-adk>=0.4.0
+google-genai>=0.3.0
+opentelemetry-api==1.37.0
+opentelemetry-sdk==1.37.0
+opentelemetry-exporter-otlp-proto-grpc==1.37.0
+opentelemetry-exporter-otlp-proto-http==1.37.0
+opentelemetry-exporter-otlp-proto-common==1.37.0
+opentelemetry-proto==1.37.0
+
+# ML stack
+scikit-learn>=1.5.0
+tensorflow>=2.16.0
+pandas>=2.2.0
+numpy>=1.26.0
+joblib>=1.4.0
+
+# MLOps + experimentation (used by training + tuning scripts)
+mlflow>=2.13.0
+optuna>=3.6.0
+shap>=0.45.0
+
+# Apps + utilities
+python-dotenv>=1.0.0
+streamlit>=1.36.0
+pytest>=8.0.0
+pydantic>=2.7.0

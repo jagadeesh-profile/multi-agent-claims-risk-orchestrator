@@ -1,0 +1,36 @@
+{
+  "top_features": [
+    {
+      "feature": "num__cost_usd",
+      "importance": 0.4302
+    },
+    {
+      "feature": "num__age",
+      "importance": 0.2047
+    },
+    {
+      "feature": "num__los_days",
+      "importance": 0.1545
+    },
+    {
+      "feature": "num__procedure_count",
+      "importance": 0.1514
+    },
+    {
+      "feature": "cat__drg_code_292",
+      "importance": 0.0158
+    },
+    {
+      "feature": "cat__drg_code_871",
+      "importance": 0.0151
+    },
+    {
+      "feature": "cat__drg_code_291",
+      "importance": 0.0144
+    },
+    {
+      "feature": "cat__drg_code_470",
+      "importance": 0.0138
+    }
+  ]
+}
