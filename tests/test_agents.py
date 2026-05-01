@@ -83,5 +83,7 @@ def test_case_b_and_c_contracts_are_explicit_and_json_only() -> None:
     assert "conflicted Case B" in fusion_agent.instruction
     assert "missing-labs Case C" in fusion_agent.instruction
     assert "Output ONLY valid JSON" in action_agent.instruction
+    assert "summary" in action_agent.instruction
+    assert "1-2 simple sentences" in action_agent.instruction
     assert "no markdown" in action_agent.instruction
     assert "no prose" in action_agent.instruction

@@ -44,6 +44,22 @@ def _parse_state_dict(raw: Any) -> dict[str, Any]:
     return {}
 
 
+def _decision_summary(risk_level: str, action: str, reasoning: Any) -> str:
+    reason = str(reasoning or "signals from the available sources were reviewed.").strip()
+    reason = reason.rstrip(".")
+
+    if action == "ESCALATE_TO_HUMAN":
+        opener = f"{risk_level.title()} risk with lower confidence: send this case to a human reviewer."
+    elif action == "FLAG_FOR_AUDIT":
+        opener = f"{risk_level.title()} risk: flag this case for audit."
+    elif action == "ROUTINE_FOLLOWUP":
+        opener = f"{risk_level.title()} risk: route this case for routine follow-up."
+    else:
+        opener = f"{risk_level.title()} risk: this case can be auto-approved."
+
+    return f"{opener} Main reason: {reason}."
+
+
 def _decision_from_fusion(patient_id: str, fusion_result: Any) -> dict[str, Any]:
     """Deterministic fallback for when ActionAgent spends its turn on a tool call."""
     fusion = _parse_state_dict(fusion_result)
@@ -66,13 +82,16 @@ def _decision_from_fusion(patient_id: str, fusion_result: Any) -> dict[str, Any]
     else:
         action = "AUTO_APPROVE"
 
+    reasoning = fusion.get("reasoning", "Deterministic fallback from fusion_result.")
+
     return {
         "patient_id": patient_id,
         "risk_level": risk_level,
         "anomaly_score": round(score, 4),
         "confidence": round(confidence, 4),
         "recommended_action": action,
-        "reasoning": fusion.get("reasoning", "Deterministic fallback from fusion_result."),
+        "summary": _decision_summary(risk_level, action, reasoning),
+        "reasoning": reasoning,
         "audit_trail": {
             "signals_used": fusion.get("signals_used", []),
             "conflict_detected": bool(fusion.get("conflict_detected", False)),

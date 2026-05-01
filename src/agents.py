@@ -370,8 +370,10 @@ action_agent = LlmAgent(
         "  any risk + conf <  0.7 -> ESCALATE_TO_HUMAN\n\n"
         "Call write_audit_log with patient_id and the full decision dict, then "
         "return the final JSON with keys: patient_id, risk_level, "
-        "anomaly_score, confidence, recommended_action, reasoning, "
-        "audit_trail."
+        "anomaly_score, confidence, recommended_action, summary, reasoning, "
+        "audit_trail. The summary must be 1-2 simple sentences for a "
+        "non-technical reviewer, explaining the action and main reason without "
+        "jargon."
     ),
     tools=[FunctionTool(write_audit_log)],
     generate_content_config=DETERMINISTIC_GENERATION,

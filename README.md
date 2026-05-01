@@ -71,12 +71,14 @@ RootPipeline (SequentialAgent)
   "anomaly_score": 0.74,
   "confidence": 0.88,
   "recommended_action": "FLAG_FOR_AUDIT",
+  "summary": "High risk: flag this case for audit. Main reason: claims and notes conflict.",
   "reasoning": "RF flagged cost anomaly; notes contradict billing pattern; fusion down-weighted labs",
   "audit_trail": "2 reviewer pass(es), all sources logged"
 }
 ```
 
 `recommended_action` is one of `AUTO_APPROVE`, `ROUTINE_FOLLOWUP`, `FLAG_FOR_AUDIT`, `ESCALATE_TO_HUMAN` — each maps to a different downstream system (auto-payment, care manager queue, SIU audit ticket, human review).
+`summary` is the short plain-English line for reviewers who do not want to inspect every score and field.
 
 ## Input and output paths
 

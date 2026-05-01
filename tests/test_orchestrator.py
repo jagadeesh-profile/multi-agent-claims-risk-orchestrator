@@ -66,6 +66,9 @@ def test_decision_from_fusion_maps_high_confidence_high_risk_to_audit() -> None:
 
     assert decision["risk_level"] == "HIGH"
     assert decision["recommended_action"] == "FLAG_FOR_AUDIT"
+    assert decision["summary"] == (
+        "High risk: flag this case for audit. Main reason: claims and notes conflict."
+    )
 
 
 def test_decision_from_fusion_maps_missing_labs_confidence_to_escalation() -> None:
@@ -78,6 +81,10 @@ def test_decision_from_fusion_maps_missing_labs_confidence_to_escalation() -> No
 
     assert decision["risk_level"] == "MEDIUM"
     assert decision["recommended_action"] == "ESCALATE_TO_HUMAN"
+    assert decision["summary"] == (
+        "Medium risk with lower confidence: send this case to a human reviewer. "
+        "Main reason: labs missing."
+    )
 
 
 class _FakeSession:

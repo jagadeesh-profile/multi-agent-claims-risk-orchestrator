@@ -92,6 +92,8 @@ if run_clicked:
     with decision_slot.container():
         st.markdown(f"**Risk level:** :{risk_color}[**{risk_level}**]")
         st.markdown(f"**Action:** `{decision.get('recommended_action', '?')}`")
+        if decision.get("summary"):
+            st.info(decision["summary"])
         st.caption("Audit records are appended to `logs/audit.jsonl` when the live ActionAgent writes the audit log.")
         col1, col2 = st.columns(2)
         col1.metric("Anomaly score", f"{decision.get('anomaly_score', 0):.2f}")
