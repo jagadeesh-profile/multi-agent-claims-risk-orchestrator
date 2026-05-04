@@ -17,5 +17,4 @@ venv/
 .DS_Store
 .streamlit/
 mlruns/
-.claude/
 .vscode/

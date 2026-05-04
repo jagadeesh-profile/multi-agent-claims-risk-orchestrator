@@ -4,7 +4,7 @@
 
 A learning-oriented multi-agent system on Google Vertex AI ADK that ingests heterogeneous claims data — structured insurance claims, semi-structured lab panels, and unstructured discharge notes — and produces a routed, explainable decision with measured latency.
 
-> **Quick links:** [Architecture diagram](docs/architecture.svg) · [Model card](docs/model_card.md) · [Data card](docs/data_card.md) · [Status / what's verified](docs/STATUS.md) · [LinkedIn launch kit](docs/LAUNCH_KIT.md)
+> **Quick links:** [Architecture diagram](docs/architecture.svg) · [Model card](docs/model_card.md) · [Data card](docs/data_card.md) · [Status / what's verified](docs/STATUS.md)
 
 ## Current baseline
 
