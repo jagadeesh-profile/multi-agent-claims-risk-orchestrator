@@ -1,0 +1,74 @@
+{
+  "verified_on": "2026-05-04",
+  "terminal_output": {
+    "command": "python -m pytest tests/ -q",
+    "artifact": "outputs/terminal/pytest_output.txt",
+    "result": "44 passed, 3 warnings in 22.58s"
+  },
+  "live_gemini_evaluation": {
+    "source_artifact": "outputs/evaluation/results.json",
+    "generated_at": "2026-04-30T18:13:40",
+    "runs_per_case": 3,
+    "total_invocations": 9,
+    "credential_handling": "GOOGLE_API_KEY was loaded locally from ignored environment config; no key is committed.",
+    "cases": [
+      {
+        "case_id": "A",
+        "patient_id": "P_MARY",
+        "modal_action": "AUTO_APPROVE",
+        "risk": "LOW",
+        "decision_agreement_rate": 1.0,
+        "failure_rate": 0.0,
+        "p50_latency_sec": 44.29
+      },
+      {
+        "case_id": "B",
+        "patient_id": "P_ROBERT",
+        "modal_action": "FLAG_FOR_AUDIT",
+        "risk": "HIGH",
+        "decision_agreement_rate": 1.0,
+        "failure_rate": 0.0,
+        "p50_latency_sec": 53.64
+      },
+      {
+        "case_id": "C",
+        "patient_id": "P_LINDA",
+        "modal_action": "ESCALATE_TO_HUMAN",
+        "risk": "MEDIUM",
+        "decision_agreement_rate": 1.0,
+        "failure_rate": 0.0,
+        "p50_latency_sec": 43.73
+      }
+    ]
+  },
+  "model_outputs": {
+    "claims_random_forest": {
+      "source_artifact": "outputs/model_metrics/claims_rf_metrics.json",
+      "auc_holdout": 0.9613,
+      "auc_cv_mean": 0.9564,
+      "auc_cv_std": 0.0208,
+      "brier_score": 0.0095,
+      "n_train": 1600,
+      "n_test": 400
+    },
+    "labs_neural_network": {
+      "source_artifact": "outputs/model_metrics/labs_nn_metrics.json",
+      "auc": 0.9477,
+      "accuracy": 0.9194,
+      "brier_score": 0.0715,
+      "log_loss": 0.2436,
+      "n_train": 1440,
+      "n_test": 360
+    }
+  },
+  "public_data_mapping": {
+    "source_artifact": "outputs/public_data_summary.md",
+    "command": "python -m src.prepare_public_data --raw-dir tmp/raw_public --out data_public",
+    "mapped_rows": {
+      "data_public/claims.csv": 66494,
+      "data_public/labs.csv": 5928,
+      "data_public/notes.csv": 222
+    },
+    "github_status": "Mapped CSV files are gitignored generated artifacts; row-count summary is committed."
+  }
+}

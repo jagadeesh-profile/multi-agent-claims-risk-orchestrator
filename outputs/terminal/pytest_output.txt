@@ -1,0 +1,21 @@
+Command:
+python -m pytest tests/ -q
+
+Output:
+............................................                             [100%]
+============================== warnings summary ===============================
+..\..\..\..\..\Python313\Lib\site-packages\google\adk\features\_feature_decorator.py:72
+  C:\Python313\Lib\site-packages\google\adk\features\_feature_decorator.py:72: UserWarning: [EXPERIMENTAL] feature FeatureName.PLUGGABLE_AUTH is enabled.
+    check_feature_enabled()
+
+tests/test_pipeline.py::test_labs_tool_handles_full_panel
+tests/test_pipeline.py::test_labs_tool_imputes_partial
+  C:\Python313\Lib\site-packages\keras\src\utils\python_utils.py:190: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    value = float(value)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+44 passed, 3 warnings in 22.58s
+
+Environment note:
+C:\Python313\Lib\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.1.0)/charset_normalizer (3.4.2) doesn't match a supported version!
+  warnings.warn(

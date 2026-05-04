@@ -20,6 +20,9 @@ outputs/*
 !outputs/model_metrics/claims_rf_metrics.json
 !outputs/model_metrics/labs_nn_metrics.json
 !outputs/public_data_summary.md
+!outputs/terminal/
+!outputs/terminal/pytest_output.txt
+!outputs/verified_output_summary.json
 outputs/decisions/
 models/*.pkl
 models/*.keras

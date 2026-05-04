@@ -137,6 +137,8 @@ Outputs are written here:
 | Final CLI decision JSON | `outputs/decisions/<patient_id>_<timestamp>.json` | `python -m src.main ...` |
 | Audit log JSONL | `logs/audit.jsonl` | ActionAgent audit tool |
 | Eval report | `outputs/evaluation/results.json`, `outputs/evaluation/results.md` | `python -m eval.run_eval --runs 3` |
+| Verified JSON summary | `outputs/verified_output_summary.json` | summary from tracked output artifacts |
+| Raw terminal test output | `outputs/terminal/pytest_output.txt` | `python -m pytest tests/ -q` |
 | Model metrics | `outputs/model_metrics/claims_rf_metrics.json`, `outputs/model_metrics/labs_nn_metrics.json` | training scripts |
 | RF tuning result | `outputs/model_metrics/claims_rf_best_params.json` | `python -m src.tune_claims_rf --trials 30` |
 | Public-data mapping summary | `outputs/public_data_summary.md` | `python -m src.prepare_public_data ...` |

@@ -18,12 +18,17 @@ quick repository review. Runtime decision JSONs are still written to
 - `public_data_summary.md` - row counts from the downloaded public sample
   mapping. The mapped CSVs stay gitignored because they are large generated
   artifacts.
+- `terminal/pytest_output.txt` - raw terminal output from the offline test run.
+- `verified_output_summary.json` - compact JSON summary of tested outputs,
+  live Gemini evaluation results, model metrics, and public-data mapping counts.
 
 ## Tested Results
 
 Latest verification on May 4, 2026:
 
 - `python -m pytest tests/ -v` completed with 44 passed tests.
+- `python -m pytest tests/ -q` raw terminal output is saved in
+  `outputs/terminal/pytest_output.txt`.
 - `python -m src.train_claims_rf` wrote RF model output metrics to
   `outputs/model_metrics/`.
 - `python -m src.train_labs_nn` wrote Labs NN output metrics to
