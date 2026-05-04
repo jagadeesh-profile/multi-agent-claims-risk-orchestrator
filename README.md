@@ -226,6 +226,7 @@ claims-risk-orchestrator/
 ├── data/                    generated synthetic data (gitignored)
 ├── models/                  trained model artifacts (gitignored)
 ├── logs/                    audit log jsonl (gitignored)
+├── outputs/                 reviewer screenshots + generated decisions (decisions gitignored)
 ├── src/
 │   ├── generate_data.py     synthesizes claims + labs + notes
 │   ├── train_claims_rf.py   trains the Random Forest model
