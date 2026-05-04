@@ -6,7 +6,12 @@ tmp/
 pytest-cache-files-*/
 logs/*.jsonl
 inputs/
-outputs/
+outputs/*
+!outputs/
+!outputs/README.md
+!outputs/eval_output_summary.png
+!outputs/model_output_summary.png
+outputs/decisions/
 models/*.pkl
 models/*.keras
 models/*.joblib

@@ -22,9 +22,9 @@ Fresh baseline from 2026-04-30:
 
 ## Output screenshots
 
-![Live evaluation summary](docs/eval_output_summary.png)
+![Live evaluation summary](outputs/eval_output_summary.png)
 
-![Model output summary](docs/model_output_summary.png)
+![Model output summary](outputs/model_output_summary.png)
 
 This is a proof of concept built to explore the four ADK agent primitives (`LlmAgent`, `SequentialAgent`, `ParallelAgent`, `LoopAgent`) on a domain that justifies using all of them. The data is synthetic-but-shape-realistic so the project can run end-to-end on a laptop without HIPAA-protected inputs. **Treat the architecture as the artifact, not the numbers.**
 
