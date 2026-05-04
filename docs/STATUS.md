@@ -31,8 +31,8 @@ python -m eval.run_eval --runs 3
 | Model | AUC | Brier | Other |
 |-------|-----|-------|-------|
 | Claims RF holdout | 0.9613 | 0.0095 | 5-fold CV AUC 0.9564 +/- 0.0208; log loss 0.0671 |
-| Labs NN holdout | 0.9514 | 0.0681 | accuracy 0.9194; log loss 0.2344 |
-| RF Optuna sweep | best CV AUC 0.9612 | n/a | 30 trials; best params in `models/claims_rf_best_params.json` |
+| Labs NN holdout | 0.9477 | 0.0715 | accuracy 0.9194; log loss 0.2436 |
+| RF Optuna sweep | best CV AUC 0.9612 | n/a | 30 trials; best params in `outputs/model_metrics/claims_rf_best_params.json` |
 
 RF best params:
 
@@ -48,7 +48,7 @@ RF best params:
 
 ### Live Evaluation
 
-Generated report: `eval/results.json` and `eval/results.md`
+Generated report: `outputs/evaluation/results.json` and `outputs/evaluation/results.md`
 
 | Case | Modal action | Agreement | p50 latency | p95 latency | Failure rate |
 |------|--------------|-----------|-------------|-------------|--------------|

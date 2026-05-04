@@ -4,7 +4,7 @@ Bayesian hyperparameter sweep for the Random Forest claims classifier.
 Replaces the hand-tuned configuration in train_claims_rf.py with a principled
 Optuna search. Optimizes 5-fold CV AUC, logs every trial to MLflow (when
 installed), prints the winning config, and writes it to
-models/claims_rf_best_params.json so train_claims_rf.py can be re-run with it.
+outputs/model_metrics/claims_rf_best_params.json.
 
 Usage:
   python -m src.tune_claims_rf --trials 30 --cv-folds 5
@@ -113,7 +113,7 @@ def main() -> None:
     p.add_argument(
         "--out",
         type=Path,
-        default=Path("models/claims_rf_best_params.json"),
+        default=Path("outputs/model_metrics/claims_rf_best_params.json"),
         help="Where to save the winning params",
     )
     args = p.parse_args()

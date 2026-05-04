@@ -4,7 +4,7 @@
 
 A learning-oriented multi-agent system on Google Vertex AI ADK that ingests heterogeneous claims data — structured insurance claims, semi-structured lab panels, and unstructured discharge notes — and produces a routed, explainable decision with measured latency.
 
-> **Quick links:** [Architecture diagram](docs/architecture.svg) · [Model card](docs/model_card.md) · [Data card](docs/data_card.md) · [Status / what's verified](docs/STATUS.md) · [LinkedIn launch kit](docs/LAUNCH_KIT.md)
+> **Quick links:** [Architecture diagram](docs/architecture.svg) · [Model card](docs/model_card.md) · [Data card](docs/data_card.md) · [Status / what's verified](docs/STATUS.md)
 
 ## Current baseline
 
@@ -14,11 +14,17 @@ Fresh baseline from 2026-04-30:
 |------|--------|
 | Offline tests | 44 passed |
 | Claims RF | AUC 0.9613, Brier 0.0095 |
-| Labs NN | AUC 0.9514, Brier 0.0681 |
+| Labs NN | AUC 0.9477, Brier 0.0715 |
 | Live eval | A/B/C all 100% decision agreement across 3 runs |
 | Expected actions | A `AUTO_APPROVE`, B `FLAG_FOR_AUDIT`, C `ESCALATE_TO_HUMAN` |
 
 ![MLflow UI baseline](docs/mlflow_ui.png)
+
+## Output screenshots
+
+![Live evaluation summary](outputs/eval_output_summary.png)
+
+![Model output summary](outputs/model_output_summary.png)
 
 This is a proof of concept built to explore the four ADK agent primitives (`LlmAgent`, `SequentialAgent`, `ParallelAgent`, `LoopAgent`) on a domain that justifies using all of them. The data is synthetic-but-shape-realistic so the project can run end-to-end on a laptop without HIPAA-protected inputs. **Treat the architecture as the artifact, not the numbers.**
 
@@ -130,9 +136,10 @@ Outputs are written here:
 |--------|----------------|------------|
 | Final CLI decision JSON | `outputs/decisions/<patient_id>_<timestamp>.json` | `python -m src.main ...` |
 | Audit log JSONL | `logs/audit.jsonl` | ActionAgent audit tool |
-| Eval report | `eval/results.json`, `eval/results.md` | `python -m eval.run_eval --runs 3` |
-| Model metrics | `models/claims_rf_metrics.json`, `models/labs_nn_metrics.json` | training scripts |
-| RF tuning result | `models/claims_rf_best_params.json` | `python -m src.tune_claims_rf --trials 30` |
+| Eval report | `outputs/evaluation/results.json`, `outputs/evaluation/results.md` | `python -m eval.run_eval --runs 3` |
+| Model metrics | `outputs/model_metrics/claims_rf_metrics.json`, `outputs/model_metrics/labs_nn_metrics.json` | training scripts |
+| RF tuning result | `outputs/model_metrics/claims_rf_best_params.json` | `python -m src.tune_claims_rf --trials 30` |
+| Public-data mapping summary | `outputs/public_data_summary.md` | `python -m src.prepare_public_data ...` |
 | MLflow runs | `mlruns/` | training and tuning scripts |
 
 The raw generated CSVs, trained model binaries, local audit logs, `.env`, `.venv`, `mlruns/`, and CLI decision outputs are gitignored by default.
@@ -220,6 +227,7 @@ claims-risk-orchestrator/
 ├── data/                    generated synthetic data (gitignored)
 ├── models/                  trained model artifacts (gitignored)
 ├── logs/                    audit log jsonl (gitignored)
+├── outputs/                 reviewer result artifacts + generated decisions (decisions gitignored)
 ├── src/
 │   ├── generate_data.py     synthesizes claims + labs + notes
 │   ├── train_claims_rf.py   trains the Random Forest model
@@ -236,17 +244,3 @@ claims-risk-orchestrator/
 ├── requirements.txt
 └── .env.example
 ```
-
-## What's missing for production
-
-This POC is a level-3 reference implementation, not a level-4 production deployment. To take it to production for a real payer, you would add:
-
-- HIPAA BAA with Google + SOC 2 Type II audit + HITRUST CSF
-- Real PHI feeds via FHIR-R4 from Epic/Cerner under signed agreements
-- Bias audits across protected classes, calibration testing, drift monitoring
-- Clinical advisory board sign-off, model risk management policy
-- 24/7 on-call rotation, multi-region failover, 99.9%+ SLOs
-- Vertex AI Agent Engine deployment with VPC Service Controls
-- Closed-loop retraining pipeline on outcome labels
-
-The code path itself is the same. What surrounds it is what takes a 50-person company two years to build.

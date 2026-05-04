@@ -54,7 +54,7 @@ jobs:
         run: |
           python - <<'PY'
           import json, pathlib
-          for f in ["models/claims_rf_metrics.json", "models/labs_nn_metrics.json"]:
+          for f in ["outputs/model_metrics/claims_rf_metrics.json", "outputs/model_metrics/labs_nn_metrics.json"]:
               p = pathlib.Path(f)
               if p.exists():
                   print(f, json.loads(p.read_text()))

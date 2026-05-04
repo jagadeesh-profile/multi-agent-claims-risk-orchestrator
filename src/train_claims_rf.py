@@ -2,9 +2,9 @@
 Train the Random Forest claims anomaly classifier.
 
 Inputs : data/claims.csv
-Outputs: models/claims_rf.joblib       (model + scaler bundled)
-         models/claims_rf_metrics.json (AUC + calibration + report)
-         models/claims_rf_feature_importance.json (top features)
+Outputs: models/claims_rf.joblib                       (model + scaler bundled)
+         outputs/model_metrics/claims_rf_metrics.json  (AUC + calibration + report)
+         outputs/model_metrics/claims_rf_feature_importance.json (top features)
          mlruns/                       (MLflow tracking — when mlflow installed)
 
 Usage  : python -m src.train_claims_rf
@@ -139,6 +139,7 @@ def main() -> None:
     )[:10]
 
     Path("models").mkdir(exist_ok=True)
+    Path("outputs/model_metrics").mkdir(parents=True, exist_ok=True)
     joblib.dump(pipe, "models/claims_rf.joblib")
 
     metrics = {
@@ -153,8 +154,10 @@ def main() -> None:
         "positive_rate_train": round(float(y_tr.mean()), 4),
         "positive_rate_test": round(float(y_te.mean()), 4),
     }
-    Path("models/claims_rf_metrics.json").write_text(json.dumps(metrics, indent=2))
-    Path("models/claims_rf_feature_importance.json").write_text(
+    metrics_path = Path("outputs/model_metrics/claims_rf_metrics.json")
+    importances_path = Path("outputs/model_metrics/claims_rf_feature_importance.json")
+    metrics_path.write_text(json.dumps(metrics, indent=2))
+    importances_path.write_text(
         json.dumps(
             {"top_features": [{"feature": f, "importance": round(i, 4)} for f, i in top_features]},
             indent=2,
@@ -187,8 +190,8 @@ def main() -> None:
                 "f1_pos": float(report["1"]["f1-score"]),
             })
             mlflow.log_artifact("models/claims_rf.joblib")
-            mlflow.log_artifact("models/claims_rf_metrics.json")
-            mlflow.log_artifact("models/claims_rf_feature_importance.json")
+            mlflow.log_artifact(str(metrics_path))
+            mlflow.log_artifact(str(importances_path))
 
     print(f"Random Forest holdout AUC: {auc:.4f}")
     print(f"  5-fold CV AUC: {np.mean(cv_aucs):.4f} ± {np.std(cv_aucs):.4f}")
@@ -196,6 +199,8 @@ def main() -> None:
     print(f"  Log loss:    {calibration['log_loss']:.4f}")
     print(f"  Top features: {[f for f, _ in top_features[:3]]}")
     print("Saved -> models/claims_rf.joblib")
+    print(f"Metrics -> {metrics_path}")
+    print(f"Features -> {importances_path}")
     if mlflow is not None:
         print("Logged -> mlflow run (open with: mlflow ui --backend-store-uri ./mlruns)")
 
