@@ -8,13 +8,13 @@ Runs each sample case ``--runs`` times, then reports:
   - failure_rate            : runs that returned an error envelope
 
 Outputs:
-  eval/results.json (machine-readable)
-  eval/results.md   (human-readable summary you can paste anywhere)
+  outputs/evaluation/results.json (machine-readable)
+  outputs/evaluation/results.md   (human-readable summary you can paste anywhere)
 
 Usage:
   python -m eval.run_eval --runs 5
   python -m eval.run_eval --runs 3 --cases A,B
-  python -m eval.run_eval --runs 10 --out eval/baseline.json
+  python -m eval.run_eval --runs 10 --out outputs/evaluation/baseline.json
 
 NOTE: This script consumes Gemini API quota. Each case is ~12 LLM calls.
 Default --runs=3 means ~36 calls per case = ~108 calls total. Stay aware
@@ -220,7 +220,7 @@ def main() -> None:
     p.add_argument(
         "--out",
         type=Path,
-        default=Path("eval/results.json"),
+        default=Path("outputs/evaluation/results.json"),
         help="Output JSON path (markdown sibling is also written)",
     )
     args = p.parse_args()

@@ -4,7 +4,7 @@ Train the TensorFlow Keras DNN that scores lab-panel risk.
 Inputs : data/labs.csv
 Outputs: models/labs_nn.keras
          models/labs_scaler.joblib   (StandardScaler — apply at inference)
-         models/labs_nn_metrics.json (AUC + accuracy + calibration)
+         outputs/model_metrics/labs_nn_metrics.json (AUC + accuracy + calibration)
          mlruns/                     (MLflow tracking — when mlflow installed)
 
 Usage  : python -m src.train_labs_nn
@@ -97,6 +97,7 @@ def main() -> None:
     ll = float(log_loss(y_te, np.clip(proba, 1e-7, 1 - 1e-7)))
 
     Path("models").mkdir(exist_ok=True)
+    Path("outputs/model_metrics").mkdir(parents=True, exist_ok=True)
     model.save("models/labs_nn.keras")
     joblib.dump(scaler, "models/labs_scaler.joblib")
 
@@ -111,7 +112,8 @@ def main() -> None:
         "final_train_auc": round(float(history.history["auc"][-1]), 4),
         "final_val_auc": round(float(history.history["val_auc"][-1]), 4),
     }
-    Path("models/labs_nn_metrics.json").write_text(json.dumps(metrics, indent=2))
+    metrics_path = Path("outputs/model_metrics/labs_nn_metrics.json")
+    metrics_path.write_text(json.dumps(metrics, indent=2))
 
     mlflow = _safe_mlflow()
     if mlflow is not None:
@@ -135,10 +137,11 @@ def main() -> None:
             })
             mlflow.log_artifact("models/labs_nn.keras")
             mlflow.log_artifact("models/labs_scaler.joblib")
-            mlflow.log_artifact("models/labs_nn_metrics.json")
+            mlflow.log_artifact(str(metrics_path))
 
     print(f"Labs NN AUC: {auc:.4f} | accuracy: {acc:.4f} | Brier: {brier:.4f}")
     print("Saved -> models/labs_nn.keras + models/labs_scaler.joblib")
+    print(f"Metrics -> {metrics_path}")
     if mlflow is not None:
         print("Logged -> mlflow run (open with: mlflow ui --backend-store-uri ./mlruns)")
 

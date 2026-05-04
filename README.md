@@ -14,7 +14,7 @@ Fresh baseline from 2026-04-30:
 |------|--------|
 | Offline tests | 44 passed |
 | Claims RF | AUC 0.9613, Brier 0.0095 |
-| Labs NN | AUC 0.9514, Brier 0.0681 |
+| Labs NN | AUC 0.9477, Brier 0.0715 |
 | Live eval | A/B/C all 100% decision agreement across 3 runs |
 | Expected actions | A `AUTO_APPROVE`, B `FLAG_FOR_AUDIT`, C `ESCALATE_TO_HUMAN` |
 
@@ -136,9 +136,10 @@ Outputs are written here:
 |--------|----------------|------------|
 | Final CLI decision JSON | `outputs/decisions/<patient_id>_<timestamp>.json` | `python -m src.main ...` |
 | Audit log JSONL | `logs/audit.jsonl` | ActionAgent audit tool |
-| Eval report | `eval/results.json`, `eval/results.md` | `python -m eval.run_eval --runs 3` |
-| Model metrics | `models/claims_rf_metrics.json`, `models/labs_nn_metrics.json` | training scripts |
-| RF tuning result | `models/claims_rf_best_params.json` | `python -m src.tune_claims_rf --trials 30` |
+| Eval report | `outputs/evaluation/results.json`, `outputs/evaluation/results.md` | `python -m eval.run_eval --runs 3` |
+| Model metrics | `outputs/model_metrics/claims_rf_metrics.json`, `outputs/model_metrics/labs_nn_metrics.json` | training scripts |
+| RF tuning result | `outputs/model_metrics/claims_rf_best_params.json` | `python -m src.tune_claims_rf --trials 30` |
+| Public-data mapping summary | `outputs/public_data_summary.md` | `python -m src.prepare_public_data ...` |
 | MLflow runs | `mlruns/` | training and tuning scripts |
 
 The raw generated CSVs, trained model binaries, local audit logs, `.env`, `.venv`, `mlruns/`, and CLI decision outputs are gitignored by default.
@@ -226,7 +227,7 @@ claims-risk-orchestrator/
 ├── data/                    generated synthetic data (gitignored)
 ├── models/                  trained model artifacts (gitignored)
 ├── logs/                    audit log jsonl (gitignored)
-├── outputs/                 reviewer screenshots + generated decisions (decisions gitignored)
+├── outputs/                 reviewer result artifacts + generated decisions (decisions gitignored)
 ├── src/
 │   ├── generate_data.py     synthesizes claims + labs + notes
 │   ├── train_claims_rf.py   trains the Random Forest model
