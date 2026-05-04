@@ -20,6 +20,12 @@ Fresh baseline from 2026-04-30:
 
 ![MLflow UI baseline](docs/mlflow_ui.png)
 
+## Output screenshots
+
+![Live evaluation summary](docs/eval_output_summary.png)
+
+![Model output summary](docs/model_output_summary.png)
+
 This is a proof of concept built to explore the four ADK agent primitives (`LlmAgent`, `SequentialAgent`, `ParallelAgent`, `LoopAgent`) on a domain that justifies using all of them. The data is synthetic-but-shape-realistic so the project can run end-to-end on a laptop without HIPAA-protected inputs. **Treat the architecture as the artifact, not the numbers.**
 
 ## Why this project exists
@@ -236,17 +242,3 @@ claims-risk-orchestrator/
 ├── requirements.txt
 └── .env.example
 ```
-
-## What's missing for production
-
-This POC is a level-3 reference implementation, not a level-4 production deployment. To take it to production for a real payer, you would add:
-
-- HIPAA BAA with Google + SOC 2 Type II audit + HITRUST CSF
-- Real PHI feeds via FHIR-R4 from Epic/Cerner under signed agreements
-- Bias audits across protected classes, calibration testing, drift monitoring
-- Clinical advisory board sign-off, model risk management policy
-- 24/7 on-call rotation, multi-region failover, 99.9%+ SLOs
-- Vertex AI Agent Engine deployment with VPC Service Controls
-- Closed-loop retraining pipeline on outcome labels
-
-The code path itself is the same. What surrounds it is what takes a 50-person company two years to build.
